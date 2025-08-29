@@ -4,10 +4,13 @@
     state: present
     update_cache: yes
 
-- name: Install pm2 globally
+- name: Install pm2 and serve globally
   npm:
-    name: pm2
+    name: "{{ item }}"
     global: yes
+  loop:
+    - pm2
+    - serve
 
 - name: Clone TravelMemory repo
   git:
@@ -27,7 +30,7 @@
   copy:
     dest: "{{ app_dir }}/frontend/.env"
     content: |
-      REACT_APP_BACKEND_URL=http://13.201.241.38:{{ backend_port }}
+      REACT_APP_BACKEND_URL=http://{{ ansible_host }}:{{ backend_port }}
 
 - name: Install backend dependencies
   command: npm install
@@ -39,13 +42,18 @@
   args:
     chdir: "{{ app_dir }}/frontend"
 
+- name: Build frontend
+  command: npm run build
+  args:
+    chdir: "{{ app_dir }}/frontend"
+
 - name: Start backend with pm2
-  command: pm2 start server.js --name backend --watch
+  command: pm2 start index.js --name backend --watch
   args:
     chdir: "{{ app_dir }}/backend"
 
-- name: Start frontend with pm2
-  command: pm2 start npm --name frontend -- run start --watch
+- name: Start frontend with pm2 (serve build)
+  command: pm2 start serve --name frontend -- -s build -l {{ frontend_port }}
   args:
     chdir: "{{ app_dir }}/frontend"
 
