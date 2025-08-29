@@ -1,0 +1,14 @@
+---
+- name: Configure MongoDB Server
+  hosts: db
+  become: true
+  gather_facts: true
+  roles:
+    - db
+
+- name: Configure Web Server
+  hosts: web
+  become: true
+  gather_facts: true
+  roles:
+    - web

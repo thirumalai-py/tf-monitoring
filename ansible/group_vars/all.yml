@@ -1,0 +1,12 @@
+app_dir: /opt/travelmemory
+repo_url: "https://github.com/thirumalai-py/thiru-travel-memory.git"
+
+# Web ports
+backend_port: 3001
+frontend_port: 3000
+
+# DB details (used for backend .env)
+db_host: "172.31.19.175"
+db_user: "traveluser"
+db_pass: "travelpass"
+db_name: "travelmemory"

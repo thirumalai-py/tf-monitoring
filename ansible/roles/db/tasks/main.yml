@@ -1,0 +1,23 @@
+- name: Install MongoDB
+  apt:
+    name: mongodb
+    state: present
+    update_cache: yes
+
+- name: Start and enable MongoDB
+  service:
+    name: mongodb
+    state: started
+    enabled: yes
+
+- name: Create MongoDB user
+  command: >
+    mongo {{ db_name }} --eval
+    'db.createUser({user:"{{ db_user }}", pwd:"{{ db_pass }}", roles:[{role:"readWrite", db:"{{ db_name }}"}]})'
+  args:
+    creates: /root/.mongo_user_created
+
+- name: Mark user creation complete
+  file:
+    path: /root/.mongo_user_created
+    state: touch

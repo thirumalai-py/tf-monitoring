@@ -1,0 +1,56 @@
+- name: Install Node.js and npm
+  apt:
+    name: [nodejs, npm]
+    state: present
+    update_cache: yes
+
+- name: Install pm2 globally
+  npm:
+    name: pm2
+    global: yes
+
+- name: Clone TravelMemory repo
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ app_dir }}"
+    version: main
+    force: yes
+
+- name: Create backend .env file
+  copy:
+    dest: "{{ app_dir }}/backend/.env"
+    content: |
+      MONGO_URI=mongodb://{{ db_user }}:{{ db_pass }}@{{ db_host }}:27017/{{ db_name }}
+      PORT={{ backend_port }}
+
+- name: Create frontend .env file
+  copy:
+    dest: "{{ app_dir }}/frontend/.env"
+    content: |
+      REACT_APP_BACKEND_URL=http://localhost:{{ backend_port }}
+
+- name: Install backend dependencies
+  command: npm install
+  args:
+    chdir: "{{ app_dir }}/backend"
+
+- name: Install frontend dependencies
+  command: npm install
+  args:
+    chdir: "{{ app_dir }}/frontend"
+
+- name: Start backend with pm2
+  command: pm2 start server.js --name backend --watch
+  args:
+    chdir: "{{ app_dir }}/backend"
+
+- name: Start frontend with pm2
+  command: pm2 start npm --name frontend -- run start --watch
+  args:
+    chdir: "{{ app_dir }}/frontend"
+
+- name: Save pm2 processes
+  command: pm2 save
+
+- name: Enable pm2 startup
+  command: pm2 startup systemd -u ubuntu --hp /home/ubuntu
