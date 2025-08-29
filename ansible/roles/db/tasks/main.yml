@@ -1,23 +1,24 @@
-- name: Install MongoDB
-  apt:
-    name: mongodb
+- name: Add MongoDB GPG key
+  apt_key:
+    url: https://www.mongodb.org/static/pgp/server-6.0.asc
     state: present
+
+- name: Add MongoDB repository
+  apt_repository:
+    repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/6.0 multiverse"
+    state: present
+
+- name: Update apt cache
+  apt:
     update_cache: yes
 
-- name: Start and enable MongoDB
-  service:
-    name: mongodb
+- name: Install MongoDB
+  apt:
+    name: mongodb-org
+    state: present
+
+- name: Enable and start MongoDB service
+  systemd:
+    name: mongod
     state: started
     enabled: yes
-
-- name: Create MongoDB user
-  command: >
-    mongo {{ db_name }} --eval
-    'db.createUser({user:"{{ db_user }}", pwd:"{{ db_pass }}", roles:[{role:"readWrite", db:"{{ db_name }}"}]})'
-  args:
-    creates: /root/.mongo_user_created
-
-- name: Mark user creation complete
-  file:
-    path: /root/.mongo_user_created
-    state: touch
