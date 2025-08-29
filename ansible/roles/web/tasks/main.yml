@@ -27,7 +27,7 @@
   copy:
     dest: "{{ app_dir }}/frontend/.env"
     content: |
-      REACT_APP_BACKEND_URL=http://localhost:{{ backend_port }}
+      REACT_APP_BACKEND_URL=http://13.201.241.38:{{ backend_port }}
 
 - name: Install backend dependencies
   command: npm install
