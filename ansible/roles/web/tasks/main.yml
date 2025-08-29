@@ -44,18 +44,28 @@
   args:
     chdir: "{{ app_dir }}/frontend"
 
-- name: Start or restart backend with pm2
-  command: pm2 startOrRestart index.js --name backend --watch
+- name: Start backend with pm2 (if not running)
+  command: pm2 start index.js --name backend --watch
   args:
     chdir: "{{ app_dir }}/backend"
+  register: backend_pm2_start
+  failed_when: backend_pm2_start.rc not in [0,1]
 
-- name: Start or restart frontend with pm2
-  command: pm2 startOrRestart npm --name frontend -- run start --watch
+- name: Restart backend if already running
+  command: pm2 restart backend --update-env
+  when: backend_pm2_start.rc == 1
+
+- name: Start frontend with pm2 (if not running)
+  command: pm2 start npm --name frontend -- run start --watch
   args:
     chdir: "{{ app_dir }}/frontend"
+  register: frontend_pm2_start
+  failed_when: frontend_pm2_start.rc not in [0,1]
+
+- name: Restart frontend if already running
+  command: pm2 restart frontend --update-env
+  when: frontend_pm2_start.rc == 1
 
 - name: Save pm2 processes
   command: pm2 save
 
-- name: Enable pm2 startup
-  command: pm2 startup systemd -u ubuntu --hp /home/ubuntu
