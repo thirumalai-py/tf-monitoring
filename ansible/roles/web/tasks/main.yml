@@ -4,13 +4,10 @@
     state: present
     update_cache: yes
 
-- name: Install pm2 and serve globally
+- name: Install pm2 globally
   npm:
-    name: "{{ item }}"
+    name: pm2
     global: yes
-  loop:
-    - pm2
-    - serve
 
 - name: Clone TravelMemory repo
   git:
@@ -42,20 +39,20 @@
   args:
     chdir: "{{ app_dir }}/frontend"
 
-- name: Build frontend using PM2
-  command: pm2 start npm --name "frontend-build" -- run build
+- name: Build frontend
+  command: npm run build
   args:
     chdir: "{{ app_dir }}/frontend"
 
-- name: Serve frontend build with PM2
-  command: pm2 start serve --name "frontend" -- -s build -l {{ frontend_port }}
-  args:
-    chdir: "{{ app_dir }}/frontend"
-
-- name: Start backend with pm2
-  command: pm2 start index.js --name backend --watch
+- name: Start or restart backend with pm2
+  command: pm2 startOrRestart index.js --name backend --watch
   args:
     chdir: "{{ app_dir }}/backend"
+
+- name: Start or restart frontend with pm2
+  command: pm2 startOrRestart npm --name frontend -- run start --watch
+  args:
+    chdir: "{{ app_dir }}/frontend"
 
 - name: Save pm2 processes
   command: pm2 save
