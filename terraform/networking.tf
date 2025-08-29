@@ -4,12 +4,6 @@ data "aws_vpc" "default" {
   default = true
 }
 
-# Internet Gateway
-resource "aws_internet_gateway" "igw" {
-  vpc_id = data.aws_vpc.default.id
-  tags = { Name = "mern-igw" }
-}
-
 # Route Table
 resource "aws_route_table" "public_rt" {
   vpc_id = data.aws_vpc.default.id

@@ -1,5 +1,5 @@
 resource "aws_security_group" "web_sg" {
-    name        = "mern-web-sg"
+    name        = "thiru-tm-mern-web-sg"
     description = "Allow HTTP/HTTPS/SSH"
     vpc_id      = data.aws_vpc.default.id
 
@@ -49,7 +49,7 @@ resource "aws_security_group" "web_sg" {
 
 # DB server SG
 resource "aws_security_group" "db_sg" {
-  name        = "mern-db-sg"
+  name        = "thiru-tm-mern-db-sg"
   description = "Allow Mongo only from web server"
   vpc_id      = data.aws_vpc.default.id
 
