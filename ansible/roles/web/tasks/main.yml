@@ -42,8 +42,13 @@
   args:
     chdir: "{{ app_dir }}/frontend"
 
-- name: Build frontend
-  command: npm run build
+- name: Build frontend using PM2
+  command: pm2 start npm --name "frontend-build" -- run build
+  args:
+    chdir: "{{ app_dir }}/frontend"
+
+- name: Serve frontend build with PM2
+  command: pm2 start serve --name "frontend" -- -s build -l {{ frontend_port }}
   args:
     chdir: "{{ app_dir }}/frontend"
 
@@ -51,11 +56,6 @@
   command: pm2 start index.js --name backend --watch
   args:
     chdir: "{{ app_dir }}/backend"
-
-- name: Start frontend with pm2 (serve build)
-  command: pm2 start serve --name frontend -- -s build -l {{ frontend_port }}
-  args:
-    chdir: "{{ app_dir }}/frontend"
 
 - name: Save pm2 processes
   command: pm2 save
