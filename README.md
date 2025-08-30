@@ -303,7 +303,7 @@ scrape_configs:
 
   > ![alt text](output/grafana_data_sources.png)
 
-- **Add Data Source**
+- **Grafana Dashboard**
 
   > ![alt text](output/grafana_dashboard.png)
 
