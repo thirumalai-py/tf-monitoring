@@ -50,7 +50,12 @@ terraform apply -var-file="terraform.tfvars" -auto-approve
 **Output - Terraform**
 
 - **Terraform Plan**
+
   > ![alt text](output/terraform_plan.png)
+
+- **Terraform apply**
+
+  > ![alt text](output/terraform_apply.png)
 
 ## 2️⃣ Configuration (Ansible)
 
@@ -113,7 +118,41 @@ Check permissions:
 **Run**
 `ansible-playbook -i inventory.ini site.yml`
 
+**Output - Ansible**
+
+- **Web EC2 Success**
+
+  > ![alt text](output/ansible_web_success.png)
+
+- **DB EC2 Success**
+
+  > ![alt text](output/ansible_db_success.png)
+
+- **PM2 Status**
+
+  > ![alt text](output/pm2_status.png)
+
+**Output - Travel Memory Application**
+
+- **API Success**
+
+  > ![alt text](output/api_success.png)
+
+- **Home page**
+
+  > ![alt text](output/home_page.png)
+
+- **Details Page**
+
+  > ![alt text](output/details_page.png)
+
+- **Add Page**
+
+  > ![alt text](output/website_add.png)
+
 ## 3️⃣ Monitoring (Prometheus + Grafana)
+
+#### Set Up Prometheus
 
 **1. Download Prometheus**
 
@@ -131,7 +170,6 @@ sudo useradd --no-create-home --shell /bin/false prometheus
 sudo mkdir /etc/prometheus /var/lib/prometheus
 sudo chown prometheus:prometheus /etc/prometheus /var/lib/prometheus
 ```
-
 
 **3. Move binaries**
 ```
@@ -194,7 +232,23 @@ sudo systemctl start prometheus
 systemctl status prometheus
 ```
 
-**Grafana**
+**Output - Prometheus**
+
+- **Prometheus Portal**
+
+  > ![alt text](output/prometheus_portal.png)
+
+- **Prometheus - Service Setup**
+
+  > ![alt text](output/promethues_service_setup.png)
+
+
+- **Prometheus - Targets used**
+
+  > ![alt text](output/promethues_targets_used.png)
+
+  
+#### Set Up Grafana and Metrics.js
 
 - Installed on web server (http://<web-ip>:3000)
 - Add Prometheus as a data source (http://<EC_IP>>:9090)
@@ -202,6 +256,21 @@ systemctl status prometheus
   - Backend request count, error rate, latency
   - MongoDB performance metrics
   - Frontend availability
+
+**📊 Grafana Dashboards**
+
+Grafana provides pre-built dashboards from Grafana Labs
+
+- Node.js / Prometheus App Metrics → Dashboard ID: `11074` (Shows Node.js metrics like event loop lag, memory usage, HTTP requests, etc.)
+- MongoDB Exporter Dashboard → Dashboard ID: `2583` (Shows MongoDB operations, latency, connections, and performance stats)
+- Node Exporter Full (System Metrics) → Dashboard ID: `1860` (Shows CPU, memory, disk, and network usage for EC2)
+
+**📥 Steps to Import a Dashboard**
+
+- In Grafana, go to Dashboards → Import.
+- Enter the Dashboard ID (e.g., 11074) from Grafana Labs.
+- Select your Prometheus data source.
+- Click Import.
 
 **Application Metrics (metrics.js)**
 
@@ -228,6 +297,16 @@ scrape_configs:
       - targets: ["localhost:4001"]
 ```
 
+**Output - Grafana Setup**
+
+- **Add Data Source**
+
+  > ![alt text](output/grafana_data_sources.png)
+
+- **Add Data Source**
+
+  > ![alt text](output/grafana_dashboard.png)
+
 ## 4️⃣ Alerts & Anomaly Detection
 
 Configured in Grafana:
@@ -241,3 +320,15 @@ Configured in Grafana:
   ```
     avg(rate(mongodb_mongod_op_latencies_latency_microseconds_total[5m])) / 1000
   ```
+
+
+**Output - Grafana Alert**
+
+- **Alert List**
+
+  > ![alt text](output/grafana_alert_list.png)
+
+
+- **Alert - Error Rate > 5%**
+
+  > ![alt text](output/grafana_alert_2.png)
